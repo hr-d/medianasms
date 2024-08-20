@@ -1,0 +1,25 @@
+{
+    "name": "hr-d/medianasms",
+    "description": "Library for interacting with medianasms service",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "HamidReza Daneshvar",
+            "email": "h.r.daneshvar.69@gmail.com"
+        }
+    ],
+    "require": {
+		"php": ">=7.0.33",
+        "guzzlehttp/guzzle": "^6.2",
+        "nesbot/carbon": "<2.0.0"
+    },
+	"require-dev": {
+        "phpunit/phpunit": "^6.5",
+        "mockery/mockery": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "HRD\\MedianaSMS\\": "src/"
+        }
+    }
+}
