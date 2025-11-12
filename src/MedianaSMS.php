@@ -25,7 +25,7 @@ class MedianaSMS
         $data = $message->toArray();
         try {
             $response = $this->request->make('api/message/send', 'POST', [$data]);
-            if ($response['succeeded'] == true and (int)$response['data'][0] > 0) {
+            if ($response['succeeded'] == true and ((int)$response['data'][0] > 0  or $response['resultCode'] == 100)) {
                 $message->setMessageId($response['data'][0]);
                 return $message;
             } else {
