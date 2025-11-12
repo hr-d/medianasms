@@ -22,7 +22,7 @@ class GuzzleHttpClient
      *
      * @var int
      */
-    protected $timeOut = 30;
+    protected $timeOut = 10;
 
     /**
      * @var ErrorHandling
