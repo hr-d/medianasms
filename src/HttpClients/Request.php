@@ -33,7 +33,9 @@ class Request
      */
     public function make(string $path, string $method, array $params)
     {
+        sleep(0.5);
         $Authorization = $this->get_auth();
+        sleep(0.5);
         try {
             return $this->client->make($this->get_apiUrl($path), $method, $params, null, [
                 'Authorization' => "Bearer " . $Authorization]);

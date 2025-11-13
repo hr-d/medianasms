@@ -4,6 +4,7 @@ namespace HRD\MedianaSMS\HttpClients;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 
 /**
  * Class GuzzleHttpClient.
@@ -22,7 +23,7 @@ class GuzzleHttpClient
      *
      * @var int
      */
-    protected $timeOut = 10;
+    protected $timeout = 10;
 
     /**
      * @var ErrorHandling
@@ -52,11 +53,22 @@ class GuzzleHttpClient
     public function make(string $url, string $method, array $params = null, array $formParam = null, array $headers = [])
     {
         try {
+            \Log::info('Mediana SMS - Request Started', [
+                'url' => $url,
+                'method' => $method,
+                'params_count' => count($params ?? []),
+                'timeout' => $this->timeout,
+            ]);
             $response = $this->client->request($method, $url, [
                 'json' => $params,
                 'form_params' => $formParam,
                 'headers' => $headers,
-                'timeOut' => $this->timeOut
+                'timeout' => $this->timeout,
+                'connect_timeout' => 5,
+                'http_errors' => false,
+            ]);
+            \Log::info('Mediana SMS - Response Received', [
+                'status_code' => $response->getStatusCode(),
             ]);
             $result = $response->getBody();
 
@@ -68,6 +80,21 @@ class GuzzleHttpClient
                 return $result;
             }
         } catch (ClientException $exception) {
+            \Log::error('Mediana SMS - ClientException', [
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+                'url' => $url,
+                'method' => $method,
+            ]);
+            $this->errorHandling->fire($exception);
+        } catch (ConnectException $exception) {
+            \Log::error('Mediana SMS - Connection Failed (SSL/Network Error)', [
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+                'url' => $url,
+                'method' => $method,
+                'handshake_exception' => $exception->getHandlerContext()['error'] ?? 'N/A',
+            ]);
             $this->errorHandling->fire($exception);
         } catch (\Exception $exception) {
             $this->errorHandling->fire($exception);
@@ -99,20 +126,20 @@ class GuzzleHttpClient
     }
 
     /**
-     * @param int $timeOut
+     * @param int $timeout
      * @return int
      */
-    public function setTimeOut(int $timeOut)
+    public function setTimeout(int $timeout)
     {
-        return $this->timeOut = $timeOut;
+        return $this->timeout = $timeout;
     }
 
     /**
      * @return int
      */
-    public function getTimeOut()
+    public function getTimeout()
     {
-        return $this->timeOut;
+        return $this->timeout;
     }
 
     /**
