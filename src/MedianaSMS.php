@@ -24,7 +24,7 @@ class MedianaSMS
             ->setTag($tag);
         $data = $message->toArray();
         try {
-            $response = $this->request->make('sms/v1/send/sms', 'POST', [$data]);
+            $response = $this->request->make('sms/v1/send/sms', 'POST', $data);
             if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
                 $message->setMessageId($response['data']['smsItems'][0]['smsItemId']);
                 $message->setResponse((array)$response);
