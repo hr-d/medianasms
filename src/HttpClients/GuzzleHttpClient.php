@@ -53,12 +53,6 @@ class GuzzleHttpClient
     public function make(string $url, string $method, array $params = null, array $formParam = null, array $headers = [])
     {
         try {
-            \Log::info('Mediana SMS - Request Started', [
-                'url' => $url,
-                'method' => $method,
-                'params_count' => count($params ?? []),
-                'timeout' => $this->timeout,
-            ]);
             $response = $this->client->request($method, $url, [
                 'json' => $params,
                 'form_params' => $formParam,
@@ -76,7 +70,7 @@ class GuzzleHttpClient
                 $result = json_decode($result, true);
             }
 
-            if ($response->getStatusCode() == 200 || $response->getStatusCode() == 201) {
+            if ($response->getStatusCode() == 200) {
                 return $result;
             }
         } catch (ClientException $exception) {

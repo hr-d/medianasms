@@ -35,6 +35,11 @@ class Message
     private $messageId;
 
     /**
+     * @var array
+     */
+    private $response;
+
+    /**
      * set sourceAddress
      * @param string $sourceAddress
      *
@@ -66,7 +71,7 @@ class Message
      */
     public function setDestinationAddress(string $destinationAddress)
     {
-        $this->destinationAddress = $destinationAddress;
+        $this->destinationAddress = [$destinationAddress];
         return $this;
     }
 
@@ -120,10 +125,30 @@ class Message
     public function toArray(): array
     {
         return [
-            'DestinationAddress' => $this->destinationAddress,
-            'MessageText' => $this->messageText,
-            'SourceAddress' => $this->sourceAddress,
+
+            'recipients' => $this->destinationAddress,
+            'messageText' => $this->messageText,
+            'sendingNumber' => $this->sourceAddress,
             'UDH' => $this->getTag(),
         ];
+    }
+
+    /**
+     * set provider response
+     *
+     */
+    public function setResponse( array $response = [])
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * set provider response
+     *
+     * @return array
+     */
+    public function getResponse(): array
+    {
+        return $this->response;
     }
 }

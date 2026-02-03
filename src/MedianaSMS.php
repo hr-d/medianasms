@@ -24,12 +24,13 @@ class MedianaSMS
             ->setTag($tag);
         $data = $message->toArray();
         try {
-            $response = $this->request->make('api/message/send', 'POST', [$data]);
-            if ($response['succeeded'] == true and ((int)$response['data'][0] > 0  or $response['resultCode'] == 100)) {
-                $message->setMessageId($response['data'][0]);
+            $response = $this->request->make('sms/v1/send/sms', 'POST', [$data]);
+            if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
+                $message->setMessageId($response['data']['smsItems'][0]['smsItemId']);
+                $message->setResponse((array)$response);
                 return $message;
             } else {
-                throw new \Exception("please connect to MedianaSMS " . PHP_EOL . json_encode($response), 500);
+                throw new \Exception("please connect to MedianaSMS " . PHP_EOL . serialize($response), 500);
             }
         } catch (\Throwable $exception) {
             throw $exception;

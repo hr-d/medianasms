@@ -5,8 +5,7 @@ namespace HRD\MedianaSMS\HttpClients;
 class Request
 {
     const MEDIANASMS_BASE_API_URL_ENV_NAME = "MEDIANASMS_BASE_API_URL";
-    const MEDIANASMS_USERNAME_ENV_NAME = "MEDIANASMS_USERNAME";
-    const MEDIANASMS_PASSWORD_ENV_NAME = "MEDIANASMS_PASSWORD";
+    const MEDIANASMS_KEY_ENV_NAME = "MEDIANASMS_KEY";
 
     /**
      * @var GuzzleHttpClient
@@ -33,33 +32,10 @@ class Request
      */
     public function make(string $path, string $method, array $params)
     {
-        sleep(0.5);
-        $Authorization = $this->get_auth();
-        sleep(0.5);
+        $Authorization = getenv(self::MEDIANASMS_KEY_ENV_NAME);
         try {
             return $this->client->make($this->get_apiUrl($path), $method, $params, null, [
-                'Authorization' => "Bearer " . $Authorization]);
-        } catch (\Throwable $e) {
-            throw $e;
-        }
-    }
-
-    /**
-     * get_auth
-     *
-     * @return string
-     * @throws \Exception
-     */
-    private function get_auth()
-    {
-        $username = getenv(self::MEDIANASMS_USERNAME_ENV_NAME);
-        $password = getenv(self::MEDIANASMS_PASSWORD_ENV_NAME);
-        try {
-            $result = $this->client->make($this->get_apiUrl('connect/token'), "post", null, [
-                "username" => $username,
-                "password" => $password,
-            ], ['Content-Type' => 'application/x-www-form-urlencoded']);
-            return $result['access_token'];
+                'X-API-KEY' => $Authorization]);
         } catch (\Throwable $e) {
             throw $e;
         }
