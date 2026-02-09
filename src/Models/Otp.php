@@ -3,21 +3,21 @@
 namespace HRD\MedianaSMS\Models;
 
 /**
- * Class Message
+ * Class Otp
  * @package HRD\MedianaSMS\Models
  */
-class Message
+class Otp
 {
 
     /**
      * @var string
      */
-    private $sourceAddress;
+    private $verificationCode;
 
     /**
      * @var string
      */
-    private $messageText = "";
+    private $patternCode;
 
     /**
      * @var string
@@ -40,26 +40,26 @@ class Message
     private $response;
 
     /**
-     * set sourceAddress
-     * @param string $sourceAddress
+     * set verificationCode
+     * @param string $verificationCode
      *
-     * @return Message
+     * @return Otp
      */
-    public function setSourceAddress(string $sourceAddress)
+    public function setVerificationCode(string $verificationCode)
     {
-        $this->sourceAddress = $sourceAddress;
+        $this->verificationCode = $verificationCode;
         return $this;
     }
 
     /**
-     * set messageText
-     * @param string $messageText
+     * set patternCode
+     * @param string $patternCode
      *
-     * @return Message
+     * @return Otp
      */
-    public function setMessageText(string $messageText)
+    public function setPatternCode(string $patternCode)
     {
-        $this->messageText = $messageText;
+        $this->patternCode = $patternCode;
         return $this;
     }
 
@@ -67,11 +67,11 @@ class Message
      * set destinationAddress
      * @param string $destinationAddress
      *
-     * @return Message
+     * @return Otp
      */
     public function setDestinationAddress(string $destinationAddress)
     {
-        $this->destinationAddress = [$destinationAddress];
+        $this->destinationAddress = $destinationAddress;
         return $this;
     }
 
@@ -79,7 +79,7 @@ class Message
      * set tag
      * @param string $tag
      *
-     * @return Message
+     * @return Otp
      */
     public function setTag(string $tag)
     {
@@ -125,10 +125,9 @@ class Message
     public function toArray(): array
     {
         return [
-
-            'recipients' => $this->destinationAddress,
-            'messageText' => $this->messageText,
-            'sendingNumber' => $this->sourceAddress,
+            'recipient' => $this->destinationAddress,
+            'patternCode' => $this->patternCode,
+            'otpCode' => $this->verificationCode,
             'clientRef' => $this->getTag(),
         ];
     }

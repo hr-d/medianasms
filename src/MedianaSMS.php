@@ -4,6 +4,8 @@ namespace HRD\MedianaSMS;
 
 use HRD\MedianaSMS\HttpClients\Request;
 use HRD\MedianaSMS\Models\Message;
+use HRD\MedianaSMS\Models\Otp;
+use HRD\MedianaSMS\Models\PatternSms;
 
 class MedianaSMS
 {
@@ -29,6 +31,53 @@ class MedianaSMS
                 $message->setMessageId($response['data']['smsItems'][0]['smsItemId']);
                 $message->setResponse((array)$response);
                 return $message;
+            } else {
+                throw new \Exception("please connect to MedianaSMS " . PHP_EOL . serialize($response), 500);
+            }
+        } catch (\Throwable $exception) {
+            throw $exception;
+        }
+    }
+
+    public function sendOtp(string $verificationCode, string $patternCode, string $destinationAddress, string $tag = null)
+    {
+        $otp = new Otp();
+        $otp
+            ->setVerificationCode($verificationCode)
+            ->setPatternCode($patternCode)
+            ->setDestinationAddress($destinationAddress)
+            ->setTag($tag);
+        $data = $otp->toArray();
+        try {
+            $response = $this->request->make('sms/v1/send/otp', 'POST', $data);
+            if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
+                $otp->setMessageId($response['data']['smsItems'][0]['smsItemId']);
+                $otp->setResponse((array)$response);
+                return $otp;
+            } else {
+                throw new \Exception("please connect to MedianaSMS " . PHP_EOL . serialize($response), 500);
+            }
+        } catch (\Throwable $exception) {
+            throw $exception;
+        }
+    }
+
+    public function sendPatternSms(string $sourceAddress, string $patternCode, array $parameters, string $destinationAddress, string $tag = null)
+    {
+        $patternSms = new PatternSms();
+        $patternSms
+            ->setParameters($parameters)
+            ->setPatternCode($patternCode)
+            ->setDestinationAddress($destinationAddress)
+            ->setSourceAddress($sourceAddress)
+            ->setTag($tag);
+        $data = $patternSms->toArray();
+        try {
+            $response = $this->request->make('sms/v1/send/pattern', 'POST', $data);
+            if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
+                $patternSms->setMessageId($response['data']['smsItems'][0]['smsItemId']);
+                $patternSms->setResponse((array)$response);
+                return $patternSms;
             } else {
                 throw new \Exception("please connect to MedianaSMS " . PHP_EOL . serialize($response), 500);
             }

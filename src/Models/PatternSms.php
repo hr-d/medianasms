@@ -3,10 +3,10 @@
 namespace HRD\MedianaSMS\Models;
 
 /**
- * Class Message
+ * Class PatternSms
  * @package HRD\MedianaSMS\Models
  */
-class Message
+class PatternSms
 {
 
     /**
@@ -15,9 +15,14 @@ class Message
     private $sourceAddress;
 
     /**
+     * @var array
+     */
+    private $parameters;
+
+    /**
      * @var string
      */
-    private $messageText = "";
+    private $patternCode;
 
     /**
      * @var string
@@ -40,10 +45,34 @@ class Message
     private $response;
 
     /**
+     * set parameters
+     * @param array $parameters
+     *
+     * @return PatternSms
+     */
+    public function setParameters(array $parameters)
+    {
+        $this->parameters = $parameters;
+        return $this;
+    }
+
+    /**
+     * set patternCode
+     * @param string $patternCode
+     *
+     * @return PatternSms
+     */
+    public function setPatternCode(string $patternCode)
+    {
+        $this->patternCode = $patternCode;
+        return $this;
+    }
+
+    /**
      * set sourceAddress
      * @param string $sourceAddress
      *
-     * @return Message
+     * @return PatternSms
      */
     public function setSourceAddress(string $sourceAddress)
     {
@@ -52,22 +81,10 @@ class Message
     }
 
     /**
-     * set messageText
-     * @param string $messageText
-     *
-     * @return Message
-     */
-    public function setMessageText(string $messageText)
-    {
-        $this->messageText = $messageText;
-        return $this;
-    }
-
-    /**
      * set destinationAddress
      * @param string $destinationAddress
      *
-     * @return Message
+     * @return PatternSms
      */
     public function setDestinationAddress(string $destinationAddress)
     {
@@ -79,7 +96,7 @@ class Message
      * set tag
      * @param string $tag
      *
-     * @return Message
+     * @return PatternSms
      */
     public function setTag(string $tag)
     {
@@ -125,9 +142,9 @@ class Message
     public function toArray(): array
     {
         return [
-
             'recipients' => $this->destinationAddress,
-            'messageText' => $this->messageText,
+            'patternCode' => $this->patternCode,
+            'parameters' => $this->parameters,
             'sendingNumber' => $this->sourceAddress,
             'clientRef' => $this->getTag(),
         ];
