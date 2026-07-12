@@ -3,6 +3,7 @@
 
 namespace HRD\MedianaSMS\HttpClients;
 
+use GuzzleHttp\Exception\RequestException;
 
 class ErrorHandling
 {
@@ -15,19 +16,50 @@ class ErrorHandling
      */
     public function fire($exception)
     {
-        try {
-            $response = $exception->getResponse();
-            $result = json_decode($response->getBody()->getContents(), true);
-            $statusCode = $response->getStatusCode();
-            $meta = $result['meta'];
-            if (!empty($meta['code']) and $meta['code'] != 'OK') {
-                throw new \Exception("medianaSMS error message: " . $meta['code'] .' - ' . $meta['errorMessage'] . PHP_EOL . 'errors: ' . serialize($meta['errors']), $statusCode);
-            } else if (empty($meta['code']) and $statusCode != 200) {
-                throw new \Exception("i don't know! please connect to MedianaSMS" . $exception->getMessage() . PHP_EOL . serialize($response->getBody()->getContents()), $statusCode);
-            }
+        $response = $exception->getResponse();
+        if (!$response) {
             throw $exception;
-        } catch (\Throwable $e) {
-            throw $e;
         }
+
+        $body = (string) $response->getBody();
+        $statusCode = $response->getStatusCode();
+
+        if ($body === '') {
+            throw $exception;
+        }
+
+        $result = json_decode($body, true);
+
+        if (
+            isset($result['meta']['code']) &&
+            $result['meta']['code'] !== 'OK'
+        ) {
+            $code = $result['meta']['code'];
+            $message = $result['meta']['errorMessage'] ?? 'Unknown error';
+            $errors = $result['meta']['errors'] ?? [];
+
+            throw new \Exception(
+                sprintf(
+                    "MedianaSMS Error [%s]: %s\nErrors: %s",
+                    $code,
+                    $message,
+                    json_encode($errors, JSON_UNESCAPED_UNICODE)
+                ),
+                $statusCode
+            );
+        }
+
+        if ($statusCode !== 200) {
+            throw new \Exception(
+                sprintf(
+                    "Failed to connect to MedianaSMS. HTTP %d\n%s",
+                    $statusCode,
+                    $body
+                ),
+                $statusCode
+            );
+        }
+
+        throw $exception;
     }
 }
