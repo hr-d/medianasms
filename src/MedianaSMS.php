@@ -27,8 +27,8 @@ class MedianaSMS
         $data = $message->toArray();
         try {
             $response = $this->request->make('sms/v1/send/sms', 'POST', $data);
-            if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
-                $message->setMessageId($response['data']['smsItems'][0]['smsItemId']);
+            if (!empty($response['data']['requestId'])) {
+                $message->setMessageId($response['data']['requestId']);
                 $message->setResponse((array)$response);
                 return $message;
             } else {
@@ -50,8 +50,8 @@ class MedianaSMS
         $data = $otp->toArray();
         try {
             $response = $this->request->make('sms/v1/send/otp', 'POST', $data);
-            if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
-                $otp->setMessageId($response['data']['smsItems'][0]['smsItemId']);
+            if (!empty($response['data']['requestId'])) {
+                $otp->setMessageId($response['data']['requestId']);
                 $otp->setResponse((array)$response);
                 return $otp;
             } else {
@@ -74,8 +74,8 @@ class MedianaSMS
         $data = $patternSms->toArray();
         try {
             $response = $this->request->make('sms/v1/send/pattern', 'POST', $data);
-            if (!empty($response['data']['smsItems'][0]['smsItemId'])) {
-                $patternSms->setMessageId($response['data']['smsItems'][0]['smsItemId']);
+            if (!empty($response['data']['requestId'])) {
+                $patternSms->setMessageId($response['data']['requestId']);
                 $patternSms->setResponse((array)$response);
                 return $patternSms;
             } else {
