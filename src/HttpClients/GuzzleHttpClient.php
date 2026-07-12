@@ -59,7 +59,7 @@ class GuzzleHttpClient
                 'headers' => $headers,
                 'timeout' => $this->timeout,
                 'connect_timeout' => 5,
-                'http_errors' => false,
+                'http_errors' => true,
             ]);
             \Log::info('Mediana SMS - Response Received', [
                 'status_code' => $response->getStatusCode(),
