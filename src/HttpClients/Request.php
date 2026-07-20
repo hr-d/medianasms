@@ -5,12 +5,16 @@ namespace HRD\MedianaSMS\HttpClients;
 class Request
 {
     const MEDIANASMS_BASE_API_URL_ENV_NAME = "MEDIANASMS_BASE_API_URL";
-    const MEDIANASMS_KEY_ENV_NAME = "MEDIANASMS_KEY";
 
     /**
      * @var GuzzleHttpClient
      */
     private $client;
+
+    /**
+     * @var string
+     */
+    private $authorization;
 
 
     /**
@@ -18,9 +22,10 @@ class Request
      *
      * @param GuzzleHttpClient|null $client
      */
-    public function __construct(GuzzleHttpClient $client = null)
+    public function __construct(string $authorization, GuzzleHttpClient $client = null)
     {
         $this->client = $client ?: new GuzzleHttpClient();
+        $this->authorization = $authorization;
     }
 
     /**
@@ -32,10 +37,9 @@ class Request
      */
     public function make(string $path, string $method, array $params)
     {
-        $Authorization = getenv(self::MEDIANASMS_KEY_ENV_NAME);
         try {
             return $this->client->make($this->get_apiUrl($path), $method, $params, null, [
-                'X-API-KEY' => $Authorization]);
+                'X-API-KEY' => $this->authorization]);
         } catch (\Throwable $e) {
             throw $e;
         }
