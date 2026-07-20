@@ -9,17 +9,16 @@ use HRD\MedianaSMS\Models\PatternSms;
 
 class MedianaSMS
 {
-    private $request, $message;
+    private $request;
 
-    public function __construct(Request $request, Message $message)
+    public function __construct(string $authorization)
     {
-        $this->request = $request;
-        $this->message = $message;
+        $this->request = new Request($authorization);
     }
 
     public function sendMessage(string $sourceAddress, string $messageText, string $destinationAddress, string $tag = null)
     {
-        $message = $this->message
+        $message = (new Message())
             ->setSourceAddress($sourceAddress)
             ->setMessageText($messageText)
             ->setDestinationAddress($destinationAddress)
@@ -41,8 +40,7 @@ class MedianaSMS
 
     public function sendOtp(string $verificationCode, string $patternCode, string $destinationAddress, string $tag = null)
     {
-        $otp = new Otp();
-        $otp
+        $otp = (new Otp())
             ->setVerificationCode($verificationCode)
             ->setPatternCode($patternCode)
             ->setDestinationAddress($destinationAddress)
@@ -64,8 +62,7 @@ class MedianaSMS
 
     public function sendPatternSms(string $sourceAddress, string $patternCode, array $parameters, string $destinationAddress, string $tag = null)
     {
-        $patternSms = new PatternSms();
-        $patternSms
+        $patternSms = (new PatternSms())
             ->setParameters($parameters)
             ->setPatternCode($patternCode)
             ->setDestinationAddress($destinationAddress)

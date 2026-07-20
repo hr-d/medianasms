@@ -3,8 +3,6 @@
 namespace HRD\MedianaSMS\HttpClients;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
 
 /**
  * Class GuzzleHttpClient.
@@ -52,6 +50,8 @@ class GuzzleHttpClient
      */
     public function make(string $url, string $method, array $params = null, array $formParam = null, array $headers = [])
     {
+        $context = ['url' => $url, 'method' => $method];
+
         try {
             $response = $this->client->request($method, $url, [
                 'json' => $params,
@@ -61,9 +61,7 @@ class GuzzleHttpClient
                 'connect_timeout' => 5,
                 'http_errors' => true,
             ]);
-            \Log::info('Mediana SMS - Response Received', [
-                'status_code' => $response->getStatusCode(),
-            ]);
+
             $result = $response->getBody();
 
             if ($this->isJson($result)) {
@@ -73,25 +71,8 @@ class GuzzleHttpClient
             if ($response->getStatusCode() == 200) {
                 return $result;
             }
-        } catch (ClientException $exception) {
-            \Log::error('Mediana SMS - ClientException', [
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'url' => $url,
-                'method' => $method,
-            ]);
-            $this->errorHandling->fire($exception);
-        } catch (ConnectException $exception) {
-            \Log::error('Mediana SMS - Connection Failed (SSL/Network Error)', [
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'url' => $url,
-                'method' => $method,
-                'handshake_exception' => $exception->getHandlerContext()['error'] ?? 'N/A',
-            ]);
-            $this->errorHandling->fire($exception);
-        } catch (\Exception $exception) {
-            $this->errorHandling->fire($exception);
+        } catch (\Throwable $exception) {
+            $this->errorHandling->fire($exception, $context);
         }
     }
 
